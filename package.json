@@ -1,0 +1,7 @@
+{
+  "name":"packcomply-v05",
+  "version":"0.5.0",
+  "private":true,
+  "scripts":{"start":"node server.js"},
+  "dependencies":{"express":"^5.1.0","multer":"^2.0.2","openai":"^6.0.0","dotenv":"^17.2.2"}
+}

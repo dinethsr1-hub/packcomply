@@ -1,0 +1,23 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PackComply AI Inspector v0.5</title>
+<style>
+body{font-family:Arial;margin:0;background:#f5f7fb;color:#17253d}.wrap{max-width:900px;margin:35px auto;padding:20px}.card{background:white;border:1px solid #dde5ef;border-radius:16px;padding:25px;box-shadow:0 8px 25px #102a430b}.drop{border:2px dashed #9dbce0;border-radius:12px;padding:35px;text-align:center;background:#f8fbff}.drop input{display:none}button{background:#0875df;color:#fff;border:0;padding:13px 20px;border-radius:8px;font-weight:bold;cursor:pointer}.preview img{max-width:100%;max-height:420px;margin-top:20px;border-radius:10px}.result{margin-top:20px}.pill{display:inline-block;padding:6px 10px;border-radius:20px;background:#edf5ff;color:#0875df;font-size:12px;font-weight:bold;margin:3px}.item{padding:13px 0;border-bottom:1px solid #edf0f4}.muted{color:#667085;font-size:13px;line-height:1.5}.grid{display:grid;grid-template-columns:1fr 1fr;gap:15px}@media(max-width:700px){.grid{grid-template-columns:1fr}}
+</style></head><body><div class="wrap">
+<div class="card"><small>PACKCOMPLY · AI PACKAGING INSPECTOR</small><h1>Inspect your packaging before export.</h1>
+<p class="muted">Upload a clear front/back packaging photo. This is a preliminary AI inspection, not a legal compliance determination.</p>
+<div class="drop"><input id="file" type="file" accept="image/*"><label for="file"><b>Choose packaging photo</b><br><small>JPG / PNG / WEBP · max 8 MB</small></label></div>
+<div class="preview" id="preview"></div><br><button id="go" disabled>Run AI Packaging Inspection</button>
+<div class="result" id="result"></div></div></div>
+<script>
+const file=document.getElementById("file"),go=document.getElementById("go"),preview=document.getElementById("preview"),result=document.getElementById("result");
+file.onchange=()=>{go.disabled=!file.files[0]; if(file.files[0]) preview.innerHTML="<img src='"+URL.createObjectURL(file.files[0])+"'>"};
+go.onclick=async()=>{go.disabled=true;go.textContent="Inspecting…";result.innerHTML="<p>AI is analysing the visible packaging information…</p>";
+let fd=new FormData();fd.append("photo",file.files[0]);try{let r=await fetch("/api/inspect",{method:"POST",body:fd}),d=await r.json();if(d.error)throw Error(d.error);let x=d.inspection;
+const arr=(a)=>Array.isArray(a)&&a.length?a.map(v=>"<span class='pill'>"+escapeHtml(v)+"</span>").join(" "):"<span class='muted'>None identified</span>";
+result.innerHTML="<h2>Preliminary Inspection</h2><div class='grid'>"+
+box("Packaging type",x.packaging_type)+box("Likely material",x.likely_material)+box("Material confidence",x.material_confidence)+box("Food-contact likelihood",x.food_contact_likelihood)+
+"</div><div class='item'><b>Visible text</b><p>"+arr(x.visible_text)+"</p></div><div class='item'><b>Visible symbols</b><p>"+arr(x.visible_symbols)+"</p></div><div class='item'><b>Possible issues</b><p>"+arr(x.possible_issues)+"</p></div><div class='item'><b>Missing information</b><p>"+arr(x.missing_information)+"</p></div><div class='item'><b>Cannot determine from photo</b><p>"+arr(x.cannot_determine)+"</p></div><p class='muted'>Confidence: "+escapeHtml(x.confidence||"not stated")+". The next step is to send these structured findings into the country-specific regulatory engine.</p>";
+}catch(e){result.innerHTML="<p>"+escapeHtml(e.message)+"</p>"}go.disabled=false;go.textContent="Run AI Packaging Inspection"};
+function box(a,b){return "<div class='item'><b>"+a+"</b><p>"+escapeHtml(b||"Not identified")+"</p></div>"}function escapeHtml(s){return String(s??"").replace(/[&<>'"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;","\"":"&quot;"}[c]))}
+</script></body></html>
