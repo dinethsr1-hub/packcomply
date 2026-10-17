@@ -1,29 +1,21 @@
-# PackComply v0.5 — AI Packaging Inspector
+# PackComply Free Beta v0.7
 
-## Run locally
-1. Install Node.js 20+.
-2. Copy `.env.example` to `.env`.
-3. Add an OpenAI API key to `.env`.
-4. Run `npm install`.
-5. Run `npm start`.
-6. Open http://localhost:3000
+Public-facing free packaging export checker.
 
-Without an API key the app uses a clearly labelled demo response, so the UI can be tested safely.
+## Free flow
+Product → destination → packaging → food-contact/end-user questions → optional photo → preliminary regulatory areas → potential issues → evidence checklist → official sources.
 
-## Architecture
-Browser photo upload -> Express backend -> OpenAI Responses API image input -> structured inspection -> future regulatory engine.
+## Run
+1. Install Node.js 20+
+2. `npm install`
+3. `npm start`
+4. Open `http://localhost:3000`
 
-The API key is server-side only; never put it in browser JavaScript.
+The free beta does not require an account or payment. The AI photo endpoint remains available when an OpenAI API key is configured.
 
-## Important
-The model is instructed not to determine exact polymer composition, migration compliance, certification validity, recyclability classification, or legal responsibility from a photograph. Those require evidence and/or official regulatory logic.
+## Product principle
+Do not claim “100% compliant”. Results are preliminary and explicitly separate AI/image observations from regulatory applicability.
 
 
-## v0.6 regulatory engine
-`POST /api/check` accepts:
-`country`, `product`, `material`, `food_contact`.
-
-It returns matched rule records, consolidated evidence requirements, and explicit limitations. Rule records are separate from the UI and include source URL, effective status, verification date and review frequency.
-
-## Verified Germany seed
-The Germany records are based on current ZSVR guidance covering registration, system participation, data reporting, small-volume reporting and declaration of completeness. The product must still be reviewed by a qualified compliance/legal professional before commercial reliance.
+## Vercel deployment
+This version separates the Express application (`app.js`) from the local listener (`server.js`) and exposes `api/index.js` for Vercel's serverless Node runtime. `vercel.json` routes requests to the Express app.
