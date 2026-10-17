@@ -1,7 +1,10 @@
 require("dotenv").config();
 const express=require("express"), multer=require("multer"), OpenAI=require("openai");
 const app=express(), upload=multer({storage:multer.memoryStorage(),limits:{fileSize:8*1024*1024}});
-app.use(express.static("public")); app.use(express.json());
+app.use(express.json());
+app.get("/", (req, res) => {
+  res.redirect("/index.html");
+});
 const RULES=require('./rules.json');
 const client=process.env.OPENAI_API_KEY?new OpenAI({apiKey:process.env.OPENAI_API_KEY}):null;
 
